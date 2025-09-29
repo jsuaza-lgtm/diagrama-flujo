@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ERP - Operaciones - Gestión casos</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #667eea 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            box-shadow: 
+                0 32px 64px rgba(0,0,0,0.12),
+                0 0 0 1px rgba(255,255,255,0.2);
+            padding: 50px;
+            position: relative;
+            animation: containerFadeIn 1s ease-out;
+        }
+
+        @keyframes containerFadeIn {
+            from { 
+                opacity: 0; 
+                transform: translateY(30px);
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0);
+            }
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(90deg, #667eea, #764ba2, #667eea);
+            background-size: 200% 100%;
+            animation: progressBar 3s ease infinite;
+            border-radius: 24px 24px 0 0;
+        }
+
+        @keyframes progressBar {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+            animation: headerSlideDown 1s ease-out 0.3s both;
+        }
+
+        @keyframes headerSlideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header h1 {
+            color: #1a202c;
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 700;
+            margin-bottom: 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            position: relative;
+            letter-spacing: -0.02em;
+        }
+
+        .header h1::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(90deg, transparent, #667eea, transparent);
+            border-radius: 2px;
+            animation: underlineExpand 2s ease-in-out infinite;
+        }
+
+        @keyframes underlineExpand {
+            0%, 100% { width: 100px; opacity: 0.6; }
+            50% { width: 200px; opacity: 1; }
+        }
+
+        .header p {
+            color: #4a5568;
+            font-size: 1.2em;
+            font-weight: 400;
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.7;
+            opacity: 0.9;
+        }
+
+        .flowchart {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 35px;
+            margin: 50px 0;
+            position: relative;
+        }
+
+        .step {
+            position: relative;
+            padding: 28px 40px;
+            border-radius: 20px;
+            color: white;
+            text-align: center;
+            font-weight: 600;
+            font-size: 1.1em;
+            box-shadow: 
+                0 20px 40px rgba(0,0,0,0.15),
+                0 0 0 1px rgba(255,255,255,0.1);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            max-width: 520px;
+            min-height: 90px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            animation: stepFadeIn 0.8s ease-out both;
+            overflow: hidden;
+        }
+
+        .step::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .step:hover::before {
+            left: 100%;
+        }
+
+        .step:nth-child(odd) { animation-delay: 0.1s; }
+        .step:nth-child(even) { animation-delay: 0.2s; }
+
+        @keyframes stepFadeIn {
+            from {
+                opacity: 0;
+                transform: translateX(-50px) scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0) scale(1);
+            }
+        }
+
+        .step:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 
+                0 32px 64px rgba(0,0,0,0.25),
+                0 0 0 1px rgba(255,255,255,0.2);
+        }
+
+        .step.start {
+            background: linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%);
+            box-shadow: 0 20px 40px rgba(16, 185, 129, 0.3);
+        }
+
+        .step.process {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 50%, #1e40af 100%);
+            box-shadow: 0 20px 40px rgba(59, 130, 246, 0.3);
+        }
+
+        .step.decision {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 50%, #b45309 100%);
+            color: #1a202c;
+            border-radius: 50px;
+            box-shadow: 0 20px 40px rgba(245, 158, 11, 0.3);
+            position: relative;
+        }
+
+        .step.decision::after {
+            content: '?';
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.5em;
+            font-weight: 700;
+            animation: questionPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes questionPulse {
+            0%, 100% { transform: translateY(-50%) scale(1); }
+            50% { transform: translateY(-50%) scale(1.2); }
+        }
+
+        .step.action {
+            background: linear-gradient(135deg, #ec4899 0%, #db2777 50%, #be185d 100%);
+            box-shadow: 0 20px 40px rgba(236, 72, 153, 0.3);
+        }
+
+        .step.end {
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 50%, #15803d 100%);
+            box-shadow: 0 20px 40px rgba(34, 197, 94, 0.3);
+            position: relative;
+        }
+
+        .step.end::after {
+            content: '✓';
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.8em;
+            font-weight: 700;
+            animation: checkmarkSpin 3s ease-in-out infinite;
+        }
+
+        @keyframes checkmarkSpin {
+            0%, 90% { transform: translateY(-50%) rotate(0deg); }
+            95% { transform: translateY(-50%) rotate(360deg); }
+            100% { transform: translateY(-50%) rotate(360deg); }
+        }
+
+        .step.escalation {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 50%, #b91c1c 100%);
+            box-shadow: 0 20px 40px rgba(239, 68, 68, 0.3);
+            animation: escalationPulse 3s ease-in-out infinite;
+        }
+
+        @keyframes escalationPulse {
+            0%, 100% { box-shadow: 0 20px 40px rgba(239, 68, 68, 0.3); }
+            50% { box-shadow: 0 25px 50px rgba(239, 68, 68, 0.5); }
+        }
+
+        .arrow {
+            width: 0;
+            height: 0;
+            border-left: 18px solid transparent;
+            border-right: 18px solid transparent;
+            border-top: 25px solid #64748b;
+            position: relative;
+            animation: arrowFloat 3s ease-in-out infinite;
+        }
+
+        @keyframes arrowFloat {
+            0%, 100% { 
+                transform: translateY(0);
+                border-top-color: #64748b;
+            }
+            50% { 
+                transform: translateY(5px);
+                border-top-color: #475569;
+            }
+        }
+
+        .arrow::after {
+            content: '';
+            position: absolute;
+            top: -25px;
+            left: -18px;
+            width: 36px;
+            height: 25px;
+            background: linear-gradient(to bottom, transparent 0%, rgba(100, 116, 139, 0.2) 100%);
+            animation: arrowGlow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes arrowGlow {
+            from { opacity: 0.3; }
+            to { opacity: 0.8; }
+        }
+
+        .parallel {
+            display: flex;
+            justify-content: space-around;
+            gap: 40px;
+            flex-wrap: wrap;
+            width: 100%;
+            max-width: 1100px;
+            position: relative;
+        }
+
+        .parallel::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 2px;
+            height: 60px;
+            background: linear-gradient(to bottom, transparent, #cbd5e1, transparent);
+            animation: connectorPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes connectorPulse {
+            0%, 100% { height: 60px; opacity: 0.5; }
+            50% { height: 80px; opacity: 1; }
+        }
+
+        .parallel .step {
+            flex: 1;
+            min-width: 320px;
+            max-width: 420px;
+        }
+
+        .roles {
+            margin: 60px 0 40px;
+            padding: 40px;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border-radius: 20px;
+            border: 1px solid #e2e8f0;
+            position: relative;
+            animation: rolesSlideUp 1s ease-out 0.5s both;
+        }
+
+        @keyframes rolesSlideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .roles::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 6px;
+            height: 100%;
+            background: linear-gradient(to bottom, #667eea, #764ba2);
+            border-radius: 0 20px 20px 0;
+        }
+
+        .roles h3 {
+            color: #1e293b;
+            margin-bottom: 30px;
+            font-size: 1.5em;
+            font-weight: 600;
+        }
+
+        .role-item {
+            display: flex;
+            align-items: center;
+            margin: 20px 0;
+            padding: 20px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            border: 1px solid #f1f5f9;
+        }
+
+        .role-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+            border-color: #e2e8f0;
+        }
+
+        .role-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 16px;
+            margin-right: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 1.2em;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .role-icon::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 70%);
+            animation: iconShine 4s ease-in-out infinite;
+        }
+
+        @keyframes iconShine {
+            0%, 100% { transform: rotate(0deg); opacity: 0; }
+            50% { transform: rotate(180deg); opacity: 1; }
+        }
+
+        .role-icon.reporter {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+        }
+
+        .role-icon.helpdesk {
+            background: linear-gradient(135deg, #10b981 0%, #047857 100%);
+        }
+
+        .role-icon.juliet {
+            background: linear-gradient(135deg, #ec4899 0%, #be185d 100%);
+            font-size: 1.5em;
+        }
+
+        .role-content {
+            flex: 1;
+        }
+
+        .role-content strong {
+            color: #1e293b;
+            font-weight: 600;
+            font-size: 1.1em;
+        }
+
+        .role-content p {
+            color: #475569;
+            margin-top: 4px;
+            line-height: 1.6;
+        }
+
+        .legend {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 40px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+        }
+
+        .legend-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .legend-color {
+            width: 24px;
+            height: 24px;
+            border-radius: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .legend-color::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            animation: legendShine 3s ease-in-out infinite;
+        }
+
+        @keyframes legendShine {
+            0%, 100% { left: -100%; }
+            50% { left: 100%; }
+        }
+
+        .legend-text {
+            font-weight: 500;
+            color: #374151;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 30px 20px;
+                margin: 10px;
+                border-radius: 20px;
+            }
+            
+            .header h1 {
+                font-size: 2.2em;
+            }
+            
+            .step {
+                padding: 20px 25px;
+                font-size: 1em;
+                max-width: 100%;
+            }
+            
+            .parallel {
+                flex-direction: column;
+                align-items: center;
+                gap: 20px;
+            }
+
+            .parallel .step {
+                min-width: 100%;
+            }
+            
+            .role-icon {
+                width: 48px;
+                height: 48px;
+            }
+
+            .flowchart {
+                gap: 25px;
+            }
+        }
+
+        .loading-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            transform: translateX(-100%);
+            animation: loadingSlide 2s ease-out;
+            z-index: 10000;
+        }
+
+        @keyframes loadingSlide {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+    </style>
+</head>
+<body>
+    <div class="loading-bar"></div>
+    
+    <div class="container">
+        <div class="header">
+            <h1>📋 ERP - Operaciones - Gestión de Casos</h1>
+            <p>Flujo integral del proceso de registro, seguimiento y resolución de casos reportados a las mesas de ayuda</p>
+        </div>
+
+        <div class="flowchart">
+            <div class="step start">
+                📝 Usuario detecta un problema o incidente
+            </div>
+            
+            <div class="arrow"></div>
+            
+            <div class="step process">
+                📋 Usuario completa el formulario de registro
+            </div>
+            
+            <div class="arrow"></div>
+            
+            <div class="step action">
+                📧 Sistema envía automáticamente correo a Mesa de Ayuda
+            </div>
+            
+            <div class="arrow"></div>
+            
+            <div class="step process">
+                📊 Caso se centraliza en Excel Drive para seguimiento
+            </div>
+            
+            <div class="arrow"></div>
+            
+            <div class="parallel">
+                <div class="step process">
+                    👥 Mesa de Ayuda recibe y procesa el caso
+                </div>
+                <div class="step action">
+                    👤 Usuario reportador mantiene responsabilidad del caso
+                </div>
+            </div>
+            
+            <div class="arrow"></div>
+            
+            <div class="step decision">
+                ❓ ¿Mesa de Ayuda solicita información adicional?
+            </div>
+            
+            <div class="arrow"></div>
+            
+            <div class="step action">
+                📞 Usuario reportador proporciona información solicitada
+            </div>
+            
+            <div class="arrow"></div>
+            
+            <div class="step decision">
+               ⏱️ ¿El caso está demorado o sin prioridad adecuada?
+            </div>
+            
+            <div class="arrow"></div>
+            
+            <div class="step escalation">
+                👩‍💼 Juliet Andrea interviene para hacer seguimiento y presión
+            </div>
+            
+            <div class="arrow"></div>
+            
+            <div class="step process">
+                📈 Seguimiento y trazabilidad del estado del caso
+            </div>
+            
+            <div class="arrow"></div>
+            
+            <div class="step end">
+                ✅ Caso resuelto y cerrado definitivamente
+            </div>
+        </div>
+
+        <div class="roles">
+            <h3>👥 Roles y Responsabilidades</h3>
+            
+            <div class="role-item">
+                <div class="role-icon reporter">R</div>
+                <div class="role-content">
+                    <strong>Usuario Reportador:</strong>
+                    <p>Registra el caso, mantiene la responsabilidad hasta el cierre, proporciona información adicional cuando se solicita.</p>
+                </div>
+            </div>
+            
+            <div class="role-item">
+                <div class="role-icon helpdesk">M</div>
+                <div class="role-content">
+                    <strong>Mesa de Ayuda:</strong>
+                    <p>Recibe casos automáticamente, los procesa, solicita información adicional si es necesario, trabaja en la resolución.</p>
+                </div>
+            </div>
+            
+            <div class="role-item">
+                <div class="role-icon juliet">👩‍💼</div>
+                <div class="role-content">
+                    <strong>Juliet Andrea:</strong>
+                    <p>Interviene cuando los casos están demorados, sin prioridad o estancados. Realiza seguimiento, presión y trazabilidad.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-color" style="background: linear-gradient(135deg, #10b981 0%, #047857 100%);"></div>
+                <span class="legend-text">Inicio del proceso</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);"></div>
+                <span class="legend-text">Proceso normal</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: linear-gradient(135deg, #f59e0b 0%, #b45309 100%);"></div>
+                <span class="legend-text">Punto de decisión</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: linear-gradient(135deg, #ec4899 0%, #be185d 100%);"></div>
+                <span class="legend-text">Acción requerida</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);"></div>
+                <span class="legend-text">Escalación</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: linear-gradient(135deg, #22c55e 0%, #15803d 100%);"></div>
+                <span class="legend-text">Finalización</span>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
