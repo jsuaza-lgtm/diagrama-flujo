@@ -1,0 +1,358 @@
+# diagrama-flujo
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diagrama de Flujo - Sistema de Gestión de Casos</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            padding: 40px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            color: #2c3e50;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header p {
+            color: #7f8c8d;
+            font-size: 1.1em;
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .flowchart {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
+            margin: 40px 0;
+        }
+
+        .step {
+            position: relative;
+            padding: 25px 35px;
+            border-radius: 15px;
+            color: white;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.1em;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            transition: all 0.3s ease;
+            max-width: 500px;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .step:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+        }
+
+        .step.start {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        }
+
+        .step.process {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .step.decision {
+            background: linear-gradient(135deg, #ffeaa7 0%, #fab1a0 100%);
+            color: #2d3436;
+            border-radius: 50px;
+        }
+
+        .step.action {
+            background: linear-gradient(135deg, #fd79a8 0%, #fdcb6e 100%);
+        }
+
+        .step.end {
+            background: linear-gradient(135deg, #00b894 0%, #00a085 100%);
+        }
+
+        .step.escalation {
+            background: linear-gradient(135deg, #e17055 0%, #d63031 100%);
+        }
+
+        .arrow {
+            width: 0;
+            height: 0;
+            border-left: 15px solid transparent;
+            border-right: 15px solid transparent;
+            border-top: 20px solid #7f8c8d;
+            margin: -10px 0;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .parallel {
+            display: flex;
+            justify-content: space-around;
+            gap: 30px;
+            flex-wrap: wrap;
+            width: 100%;
+            max-width: 1000px;
+        }
+
+        .parallel .step {
+            flex: 1;
+            min-width: 280px;
+        }
+
+        .roles {
+            margin: 40px 0;
+            padding: 30px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 15px;
+            border-left: 5px solid #667eea;
+        }
+
+        .roles h3 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+        }
+
+        .role-item {
+            display: flex;
+            align-items: center;
+            margin: 15px 0;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .role-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+        }
+
+        .role-icon.reporter {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .role-icon.helpdesk {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        }
+
+        .role-icon.juliet {
+            background: linear-gradient(135deg, #fd79a8 0%, #fdcb6e 100%);
+        }
+
+        .legend {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .step {
+                padding: 20px;
+                font-size: 1em;
+            }
+            
+            .parallel {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📋 Sistema de Gestión de Casos</h1>
+            <p>Diagrama de flujo del proceso de registro, seguimiento y resolución de casos reportados a las mesas de ayuda</p>
+        </div>
+
+        <div class="flowchart">
+            <div class="step start">
+                📝 Usuario detecta un problema o incidente
+            </div>
+            
+            <div class="arrow"></div>
+            
+            <div class="step process">
+                📋 Usuario completa el formulario de registro
+            </div>
+            
+            <div class="arrow"></div>
+            
+            <div class="step action">
+                📧 Sistema envía automáticamente correo a Mesa de Ayuda
+            </div>
+            
+            <div class="arrow"></div>
+            
+            <div class="step process">
+                📊 Caso se centraliza en Excel Drive para seguimiento
+            </div>
+            
+            <div class="arrow"></div>
+            
+            <div class="parallel">
+                <div class="step process">
+                    👥 Mesa de Ayuda recibe y procesa el caso
+                </div>
+                <div class="step action">
+                    👤 Usuario reportador mantiene responsabilidad del caso
+                </div>
+            </div>
+            
+            <div class="arrow"></div>
+            
+            <div class="step decision">
+                ❓ ¿Mesa de Ayuda solicita información adicional?
+            </div>
+            
+            <div class="arrow"></div>
+            
+            <div class="step action">
+                📞 Usuario reportador proporciona información solicitada
+            </div>
+            
+            <div class="arrow"></div>
+            
+            <div class="step decision">
+               ⏱️ ¿El caso está demorado o sin prioridad adecuada?
+            </div>
+            
+            <div class="arrow"></div>
+            
+            <div class="step escalation">
+                👩‍💼 Juliet Andrea interviene para hacer seguimiento y presión
+            </div>
+            
+            <div class="arrow"></div>
+            
+            <div class="step process">
+                📈 Seguimiento y trazabilidad del estado del caso
+            </div>
+            
+            <div class="arrow"></div>
+            
+            <div class="step end">
+                ✅ Caso resuelto y cerrado definitivamente
+            </div>
+        </div>
+
+        <div class="roles">
+            <h3>👥 Roles y Responsabilidades</h3>
+            
+            <div class="role-item">
+                <div class="role-icon reporter">R</div>
+                <div>
+                    <strong>Usuario Reportador:</strong> Registra el caso, mantiene la responsabilidad hasta el cierre, proporciona información adicional cuando se solicita.
+                </div>
+            </div>
+            
+            <div class="role-item">
+                <div class="role-icon helpdesk">M</div>
+                <div>
+                    <strong>Mesa de Ayuda:</strong> Recibe casos automáticamente, los procesa, solicita información adicional si es necesario, trabaja en la resolución.
+                </div>
+            </div>
+            
+            <div class="role-item">
+                <div class="role-icon juliet">👩‍💼</div>
+                <div>
+                    <strong>Juliet Andrea:</strong> Interviene cuando los casos están demorados, sin prioridad o estancados. Realiza seguimiento, presión y trazabilidad.
+                </div>
+            </div>
+        </div>
+
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-color" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);"></div>
+                <span>Inicio del proceso</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);"></div>
+                <span>Proceso normal</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: linear-gradient(135deg, #ffeaa7 0%, #fab1a0 100%);"></div>
+                <span>Punto de decisión</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: linear-gradient(135deg, #fd79a8 0%, #fdcb6e 100%);"></div>
+                <span>Acción requerida</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: linear-gradient(135deg, #e17055 0%, #d63031 100%);"></div>
+                <span>Escalación</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: linear-gradient(135deg, #00b894 0%, #00a085 100%);"></div>
+                <span>Finalización</span>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
